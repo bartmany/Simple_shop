@@ -98,13 +98,13 @@ class Message{
     public function setMessageText($newMessage){
         $this->message = $newMessage;
     }
-    
+
     public function getOpened(){
         return $this->opened;
     }
     public function openMessage(){
         $this->opened = date("Y-m-d H:i:s");
-        $this->saveToDB();
+        return $this->saveToDB();
     }
     //this function is responsible for saving any changes done to Message to database
     public function saveToDB(){
@@ -112,6 +112,6 @@ class Message{
         return Message::$conn->query($sql);
     }
     // @codeCoverageIgnoreEnd
-    
-    
+
+
 }
