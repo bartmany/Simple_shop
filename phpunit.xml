@@ -28,7 +28,7 @@
             <directory>./api/tests</directory>
         </blacklist>
         <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
+            <directory suffix=".php">api/src</directory>
             <exclude>
               <file>api/src/db.php</file>
             </exclude>
