@@ -1,10 +1,15 @@
 <?php
-class Product
-{
+class Product {
+    static private $conn;
+
     private $id;
     private $productCode;
     private $unitPrice = 0;
     private $stockQty = 0;
+
+    public static function SetConnection($newConnection){
+        Product::$conn = $newConnection;
+    }
 
     public function __construct($id=null, $code=null, $price=0, $stock=0)
     {
@@ -72,5 +77,10 @@ class Product
     public function getStockQty()
     {
         return $this->stockQty;
+    }
+
+    public function saveToDB(){
+        $sql = "";
+        return Products::$conn->query($sql);
     }
 }
