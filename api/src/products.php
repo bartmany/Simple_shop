@@ -56,7 +56,7 @@ class Product
 
     public function setProductCode($product_code)
     {
-        $this->product_code = $product_code;
+        $this->productCode = $product_code;
     }
 
     public function getUnitPrice()

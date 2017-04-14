@@ -66,4 +66,28 @@ class productTest extends TestCase {
       $this->testObj->sell(5);
       $this->assertFalse($this->testObj->hasStock());
     }
+
+    /**
+     * @test if_is_product_code_is_changed
+     * @covers Product::setProductCode
+     * @covers Product::getProductCode
+     * @covers Product::sell
+     * @covers Product::__construct
+     */
+    public function if_is_product_code_is_changed(){
+      $this->testObj->setProductCode(9);
+      $this->assertEquals(9,$this->testObj->getProductCode());
+    }
+
+    /**
+     * @test if_is_unit_price_is_changed
+     * @covers Product::setUnitPrice
+     * @covers Product::getUnitPrice
+     * @covers Product::sell
+     * @covers Product::__construct
+     */
+    public function if_is_unit_price_is_changed(){
+      $this->testObj->setUnitPrice(99);
+      $this->assertEquals(99,$this->testObj->getUnitPrice());
+    }
   }
