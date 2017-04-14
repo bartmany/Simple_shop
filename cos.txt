@@ -1,1 +1,17 @@
-create tables users 
+create table users (
+                        `id` int AUTO_INCREMENT NOT NULL,
+                        `name` varchar(255) NOT NULL,
+                        `email` varchar(255) NOT NULL,
+                        `password` varchar(60) NOT NULL,
+                        `info` text,
+                        PRIMARY KEY(id))
+     ENGINE=InnoDB, CHARACTER SET=utf8;
+
+create table products (
+                        `id` int AUTO_INCREMENT NOT NULL,
+                        `code` varchar(66) NOT NULL,
+                        `images` varchar(255) NOT NULL,
+                        `price` decimal(10,2),
+                        `quantity` decimal(10,2), 
+                        PRIMARY KEY(id))
+     ENGINE=InnoDB, CHARACTER SET=utf8;
