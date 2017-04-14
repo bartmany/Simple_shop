@@ -5,6 +5,7 @@ class Admin {
     private $email;
     private $password;
 
+    // @codeCoverageIgnoreStart
     public function setName($name)
     {
         $this->name = $name;
@@ -41,5 +42,5 @@ class Admin {
     {
         return $this->password;
     }
-
+    // @codeCoverageIgnoreEnd
 }

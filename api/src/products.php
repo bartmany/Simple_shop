@@ -80,7 +80,7 @@ class Product {
     }
 
     public function saveToDB(){
-        $sql = "";
+        //$sql = ;
         return Products::$conn->query($sql);
     }
 }
