@@ -21,6 +21,7 @@
             <file>api/tests/user.test.php</file>
             <file>api/tests/order.test.php</file>
             <file>api/tests/admin.test.php</file>
+            <file>api/tests/message.test.php</file>
             <exclude>api/src/db.php</exclude>
         </testsuite>
     </testsuites>
