@@ -26,3 +26,18 @@ create table Messages(
                         FOREIGN KEY(sender_id) REFERENCES Users(id) ON DELETE CASCADE,
                         FOREIGN KEY(reciever_id) REFERENCES Users(id) ON DELETE CASCADE)
      ENGINE=InnoDB, CHARACTER SET=utf8;
+
+create table orders (
+                        `id` int AUTO_INCREMENT NOT NULL,
+                        `user_id` int NOT NULL,
+                        `total` decimal(10,2),
+                        PRIMARY KEY(id)),
+                        FOREIGN KEY(user_id) REFERENCES Users(id) ON DELETE CASCADE,
+     ENGINE=InnoDB, CHARACTER SET=utf8;
+
+create table ord_prod (
+                        `id` int AUTO_INCREMENT NOT NULL,
+                        `order_id` int NOT NULL,
+                        `prod_id` decimal(10,2),
+                        PRIMARY KEY(id))
+     ENGINE=InnoDB, CHARACTER SET=utf8;

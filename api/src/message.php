@@ -104,7 +104,7 @@ class Message{
     }
     public function openMessage(){
         $this->opened = date("Y-m-d H:i:s");
-        $this->saveToDB();
+        return $this->saveToDB();
     }
     //this function is responsible for saving any changes done to Message to database
     public function saveToDB(){
