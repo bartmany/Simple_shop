@@ -15,3 +15,14 @@ create table products (
                         `quantity` decimal(10,2), 
                         PRIMARY KEY(id))
      ENGINE=InnoDB, CHARACTER SET=utf8;
+
+create table Messages(
+                        id int AUTO_INCREMENT NOT NULL,
+                        sender_id int NOT NULL,
+                        reciever_id int NOT NULL,
+                        opened datetime NOT NULL,
+                        message text NOT NULL,
+                        PRIMARY KEY(id),
+                        FOREIGN KEY(sender_id) REFERENCES Users(id) ON DELETE CASCADE,
+                        FOREIGN KEY(reciever_id) REFERENCES Users(id) ON DELETE CASCADE)
+     ENGINE=InnoDB, CHARACTER SET=utf8;

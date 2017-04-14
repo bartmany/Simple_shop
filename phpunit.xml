@@ -19,6 +19,7 @@
         <testsuite name="testAll">
             <file>api/tests/products.test.php</file>
             <file>api/tests/user.test.php</file>
+            <file>api/tests/message.test.php</file>
             <exclude>api/src/db.php</exclude>
         </testsuite>
     </testsuites>
