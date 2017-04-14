@@ -1,9 +1,9 @@
 
 <?php
 define('DB_LOGIN', 'root'); //login
-define('DB_PASS', '1234'); //password
+define('DB_PASS', 'coderslab'); //password
 define('DB_DB', 'simpleshop'); //database
-define('DB_HOST', '127.0.0.1:3306'); //host
+define('DB_HOST', 'localhost'); //host
 // connection with DB
 try {
     $conn = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_DB . ';charset=utf8mb4', DB_LOGIN, DB_PASS, [
