@@ -191,7 +191,7 @@ class MessageTest extends TestCase {
         Message::SetConnection($db);
 
         $message = new Message(1, 1, 'user', 1, 'user2', 'message', '2000-01-01 00:00:00');
-        
+
         $db->shouldReceive('query')
                 ->withArgs(["UPDATE Messages SET opened='{$message->getOpened()}' WHERE id=1"])->andReturn(true);
 
@@ -204,6 +204,7 @@ class MessageTest extends TestCase {
      * @covers Message::__construct
      * @covers Message::saveToDB
      * @covers Message::getOpened
+     * @covers Message::SetConnection
      */
     public function test_open_message() {
         $message = new Message(1, 1, 'user', 1, 'user2', 'message');
@@ -211,8 +212,9 @@ class MessageTest extends TestCase {
 
         Message::SetConnection($db);
         $db->shouldReceive('query')
-                ->withArgs(["UPDATE Messages SET opened='{$message->getOpened()}' WHERE id=1"])->andReturn(true);
-        $message->openMessage();
+                ->withArgs([m::any()])->andReturn(true);
+        $res = $message->openMessage();
+        $this->assertTrue($res);
     }
 
 }

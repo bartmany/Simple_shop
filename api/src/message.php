@@ -98,7 +98,7 @@ class Message{
     public function setMessageText($newMessage){
         $this->message = $newMessage;
     }
-    
+
     public function getOpened(){
         return $this->opened;
     }
@@ -112,6 +112,6 @@ class Message{
         return Message::$conn->query($sql);
     }
     // @codeCoverageIgnoreEnd
-    
-    
+
+
 }
