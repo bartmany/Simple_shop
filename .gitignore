@@ -3,3 +3,4 @@
 composer.lock
 /api/src/db.php
 /coverage
+/nbproject/
