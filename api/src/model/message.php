@@ -1,6 +1,5 @@
 <?php
 
-
 class Message{
     static private $conn;
 
