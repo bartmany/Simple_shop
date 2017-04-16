@@ -1,138 +1,162 @@
 <?php
+/*
+ * Creating User:
+ * 1. $user = new User();
+ *    $user->setEmail('email')->setUsername('username')->setPasswordHash('password')->save();
+ * 
+ * 2. $user = new User('email', 'username')->setPasswordHash('password')->save();
+ *    $user->setPasswordHash('password')->save();
+ */
 
-class User{
-    static private $conn;
- 
-    private $name;
-    private $id;
+class User extends activeRecord {
+
+    private $username;
     private $email;
-    private $info;
-    private $password;
- 
-    public static function SetConnection($newConnection){
-        User::$conn = $newConnection;
+    private $passwordHash;
+
+    public function __construct($email = '', $username = '', $password = '') {
+        parent::__construct();
+        $this->setEmail($email);
+        $this->setUsername($username);
+        $this->passwordHash = $password;
     }
- 
-    public static function GetUser($id){
-        $sqlStatement = "Select * from Users where id = '$id'";
-        $result = User::$conn->query($sqlStatement);
-        if ($result->num_rows == 1) {
-            $userData = $result->fetch_assoc();
-            return new User($userData['id'], $userData['name'], $userData['info'], $userData['email'], $userData['password']);
-        }
-        return -1;
-    }
- 
-    public static function CreateUser($userMail, $password){
-        $sqlStatement = "Select * from Users where email = '$userMail'";
-        $result = User::$conn->query($sqlStatement);
-        if ($result->num_rows == 0) {
-            $hashed_password = md5($password);
-            $sqlStatement = "INSERT INTO Users(name, email, password, info) values ('', '$userMail', '$hashed_password', '')";
-            if (User::$conn->query($sqlStatement) === TRUE) {
-                return new User(User::$conn->insert_id, 'jakies', $userMail, 'glupoty', $hashed_password);
+
+    public function save() {
+        self::connect();
+        if ($this->id == -1) {
+            $sql = "INSERT INTO users (username, email, passwordHash) values (:username, :email, :passwordHash)";
+            $stmt = self::$db->conn->prepare($sql);
+            if (User::loadByEmail($this->getEmail()) == null) {
+                $result = $stmt->execute([
+                    'username' => $this->username,
+                    'email' => $this->email,
+                    'passwordHash' => $this->passwordHash
+                ]);
+                if ($result == true) {
+                    $this->id = self::$db->conn->lastInsertId();
+                    return true;
+                }
             }
+            return null;
+        } else {
+            $this->update();
         }
         return null;
     }
- 
-    public static function AuthenticateUser($userMail, $password){
-        $sqlStatement = "Select * from Users where email = '$userMail'";
-        $result = User::$conn->query($sqlStatement);
-        if ($result->num_rows == 1) {
-            $userData = $result->fetch_assoc();
-            $user = new User($userData['id'], $userData['name'], $userData['email'], $userData['info'], $userData['password']);
- 
-            if($user->authenticate($password)){
+
+    public function update() {
+        $sql = "UPDATE users SET username = :username, email = :email, passwordHash = :passwordHash WHERE id = :id";
+        $stmt = self::$db->conn->prepare($sql);
+        $result = $stmt->execute([
+            'username' => $this->username,
+            'email' => $this->email,
+            'passwordHash' => $this->passwordHash,
+            'id' => $this->id
+        ]);
+        return $result;
+    }
+
+    public function delete() {
+        self::connect();
+        if ($this->id != -1) {
+            $sql = "DELETE FROM users WHERE id=:id";
+            $stmt = self::$db->conn->prepare($sql);
+            $result = $stmt->execute(['id' => $this->id]);
+            if ($result == true) {
+                $this->id = -1;
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    static public function loadById($id) {
+        self::connect();
+        $sql = "SELECT * FROM users WHERE id=:id";
+        $stmt = self::$db->conn->prepare($sql);
+        $result = $stmt->execute(['id' => $id]);
+        if ($result && $stmt->rowCount() >= 1) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $loadedUser = new user($row['email'], $row['username'], $row['passwordHash']);
+            $loadedUser->id = $row['id'];
+            return $loadedUser;
+        }
+        return null;
+    }
+
+    static public function loadAll() {
+        self::connect();
+        $sql = "SELECT * FROM users";
+        $result = self::$db->conn->query($sql);
+        $returnTable = [];
+        if ($result !== false && $result->rowCount() > 0) {
+            foreach ($result as $row) {
+                $loadedUser = new user($row['email'], $row['username'], $row['passwordHash']);
+                $loadedUser->id = $row['id'];
+                $returnTable[] = $loadedUser;
+            }
+        }
+        return $returnTable;
+    }
+
+    static public function loadByEmail($email) {
+        self::connect();
+        $sql = "SELECT * FROM users WHERE email=:email";
+        $stmt = self::$db->conn->prepare($sql);
+        $result = $stmt->execute(['email' => $email]);
+        if ($result && $stmt->rowCount() == 1) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $loadedUser = new user($row['email'], $row['username'], $row['passwordHash']);
+            $loadedUser->id = $row['id'];
+            return $loadedUser;
+        }
+        return null;
+    }
+
+    public static function AuthenticateUser($email, $password) {
+        $user = User::loadByEmail($email);
+        var_dump($user);
+        if ($user != null) {
+            if ($user->passwordHash == User::createPasswordHash($password)) {
                 return $user;
             }
         }
         return null;
     }
- 
-    public static function DeleteUser(User $toDelete, $password){
-        if($toDelete->authenticate($password)){
-            $userMail = $toDelete->getEmail();
-            $sql = "DELETE FROM Users WHERE email = '$userMail'";
-            if (User::$conn->query($sql) === TRUE) {
-                return true;
-            }
-        }
-        return false;
+
+    public static function createPasswordHash($password) {
+        return md5($password);
     }
- 
-    public static function GetAllUserNames(){
-        $ret = array();
-        $sqlStatement = "Select id, name, email from Users";
-        $result = User::$conn->query($sqlStatement);
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()){
-                $ret[] = $row;
-            }
-        }
-        return $ret;
-    }
- 
-    public static function GetUserInfo($id){
-        $sqlStatement = "Select id, name, email, info from Users where id=$id";
-        $result = User::$conn->query($sqlStatement);
-        if ($result->num_rows > 0) {
-            return $result->fetch_assoc();
-        }
-        return null;
-    }
- 
-    public function __construct($newId, $newName, $newMail, $newInfo, $password){
-        $this->id = $newId;
-        $this->name = $newName;
-        $this->email = $newMail;
-        $this->info = $newInfo;
-        $this->password = $password;
-    }
-    // @codeCoverageIgnoreStart
-    public function getId(){
+    
+    public function getId() {
         return $this->id;
     }
- 
-    public function getName(){
-        return $this->name;
+
+    public function getUsername() {
+        return $this->username;
     }
- 
-    public function setName($newName){
-        $this->name = $newName;
-    }
- 
-    public function getEmail(){
+
+    public function getEmail() {
         return $this->email;
     }
- 
-    public function setEmail($newEmail){
-        $this->email = $newEmail;
+
+    public function getPasswordHash() {
+        return $this->passwordHash;
     }
- 
-    public function getInfo(){
-        return $this->info;
+
+    public function setUsername($username) {
+        $this->username = $username;
+        return $this;
     }
- 
-    public function setInfo($newInfo){
-        $this->info = $newInfo;
+
+    public function setEmail($email) {
+        $this->email = $email;
+        return $this;
     }
- 
-    public function setPassword($newPassword){
-        $this->password = md5($newPassword);
-    }
-    // @codeCoverageIgnoreEnd
- 
-    public function saveToDB(){
-        $sql = "UPDATE Users SET name='{$this->name}', email='{$this->email}', info='{$this->info}', password='{$this->password}' WHERE id={$this->id}";
-        return User::$conn->query($sql);
-    }
- 
-    public function authenticate($password){
-        if(md5($password) == $this->password){
-            //User is verified
-            return true;
-        }
-        return false;
+
+    public function setPasswordHash($password) {
+        $this->passwordHash = User::createPasswordHash($password);
+        return $this;
     }
 }
