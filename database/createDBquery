@@ -5,7 +5,7 @@ USE simpleshop;
 CREATE TABLE Users (
                         `id` int AUTO_INCREMENT NOT NULL,
                         `name` varchar(255) NOT NULL,
-                        `email` varchar(255) NOT NULL,
+                        `email` varchar(255) NOT NULL UNIQUE,
                         `password` varchar(255) NOT NULL,
                         PRIMARY KEY(id))
      ENGINE=InnoDB, CHARACTER SET=utf8;
@@ -53,13 +53,13 @@ CREATE TABLE Orders (
                         FOREIGN KEY(user_id) REFERENCES Users(id) ON DELETE CASCADE)
      ENGINE=InnoDB, CHARACTER SET=utf8;
 
-CREATE TABLE Product_Orders (
+CREATE TABLE Prod_Ord (
                         `id` int AUTO_INCREMENT NOT NULL,
                         `order_id` int NOT NULL,
                         `product_id` int,
+                        `quantity` decimal (10,2),
                         PRIMARY KEY(id),
                         FOREIGN KEY(order_id) REFERENCES Orders(id) ON DELETE CASCADE,
                         FOREIGN KEY(product_id) REFERENCES Products(id) ON DELETE CASCADE)
      ENGINE=InnoDB, CHARACTER SET=utf8;
- 
  
