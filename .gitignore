@@ -2,6 +2,6 @@
 .DS_Store
 /vendor
 composer.lock
-/api/src/db.php
+/api/src/util/db.php
 /coverage
 /nbproject/
